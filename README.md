@@ -4,8 +4,8 @@
 
 **Files contained in this repo**
 
-- eurorad_cases.csv: Full List of Case IDs selected to be included in our study. To review an individual case, go to https://eurorad.org/case/CaseID
-- prompt_format.py: Script that shows how we format each prompt for each LLM (for use with the [create_completion function](https://llama-cpp-python.readthedocs.io/en/stable/api-reference/#llama_cpp.Llama.create_completion) of llama_cpp_python)
+- eurorad_cases.csv: Full List of Case IDs selected to be included in our study. To review an individual case by its CaseID, go to https://eurorad.org/case/CaseID
+- prompt_format.py: Script that shows how we format each prompt for each LLM (for use with the [create_completion](https://llama-cpp-python.readthedocs.io/en/stable/api-reference/#llama_cpp.Llama.create_completion) function of llama_cpp_python)
 - prompt_template.txt: Templates for the diverse prompts (summary, judge,...) used in our study
 
 **LLMs used in our study**
