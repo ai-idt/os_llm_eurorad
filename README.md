@@ -1,4 +1,4 @@
-# Benchamrking Open Source LLMs in Challenging Radiology Cases
+# Benchmarking Open Source LLMs in Challenging Radiology Cases
 
 ![Percentage correct across all cases.](summary.png)
 
