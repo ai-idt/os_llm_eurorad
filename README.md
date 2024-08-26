@@ -1,6 +1,6 @@
 # Benchmarking Open Source LLMs in Challenging Radiology Cases
 
-![Percentage correct across all cases.](summary.png)
+![Percentage correct across all cases.](results_overview.png)
 
 **Files contained in this repo**
 
