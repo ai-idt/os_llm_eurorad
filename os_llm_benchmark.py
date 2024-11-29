@@ -1,21 +1,28 @@
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1" #Or whatever your large GPU is
 from llama_cpp import Llama
-from glob import glob
-import json
 import pandas as pd
 
 """
 HYPER_PARAMETERS
+NOTE:   In the call to load the model, we defined to fully offload the model to the GPU (n_gpu_layers=-1).
+        If a model does not fit into your GPU's VRAM (in particular, the 70B models), you must either (i) omit this model (outcomment it in "MODEL_ZOO" below) or (ii) change the offloading
 """
 max_tokens = 1024
+n_ctx = 4096
 temperature = 0.0
 verbose = False
+
 base_prompt = 'You are a senior radiologist. Below, you will find information about a patient: First, the clinical presentation, followed by imaging findings. Based on this information, name the three most likely differential diagnoses, with a short rationale for each.'
 correctness_prompt = 'You are a senior radiologist. Below, you will find the correct diagnosis (given after "Correct Diagnosis:"), followed by the differential diagnoses given by a Radiology Assistant during an exam. Please grade if the radiology assistant provided the correct diagnosis in his differential diagnosis. Only reply with either "correct" (when the correct diagnosis is contained in the answer by the radiology assistant) or "wrong", if it is not.'
 
+model_folder = "/mnt/8tb_slot8/benedikt/" # Adjust this to where you store your .gguf files
+output_file = "/home/benedikt/output.csv" # This is where the final .csv (with model response and LLM-Judge evaluation) is stored
+
+judge_llm = {"Model": 'Meta-Llama-3-70B-Instruct-Q4_K_M.gguf',
+            "PromptStyle": "llama-3"} #This is the LLM to judge the responses
+
 """
 MODEL_ZOO
+NOTE: This is a dict, where keys are model file names and values are the prompt construction template to be used
 """
 models = {'Phi-3-medium-128k-instruct-Q5_K_M.gguf': "phi-3", #https://huggingface.co/bartowski/Phi-3-medium-128k-instruct-GGUF
  'gemma-2-27b-it-Q5_K_M.gguf': "gemma", #https://huggingface.co/bartowski/gemma-2-27b-it-GGUF
@@ -27,7 +34,11 @@ models = {'Phi-3-medium-128k-instruct-Q5_K_M.gguf': "phi-3", #https://huggingfac
  'medalpaca-13b.Q5_K_M.gguf': "medalpaca", #https://huggingface.co/mradermacher/medalpaca-13b-GGUF
  'meditron-7b-chat.Q5_K_M.gguf': "meditron", #https://huggingface.co/TheBloke/meditron-7B-chat-GGUF
  'mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf': "mixtral", #https://huggingface.co/TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF
- 'vicuna-13b-v1.5.Q5_K_M.gguf': "vicuna"} #https://huggingface.co/TheBloke/vicuna-7B-v1.5-GGUF
+ 'vicuna-13b-v1.5.Q5_K_M.gguf': "vicuna", #https://huggingface.co/TheBloke/vicuna-13B-v1.5-GGUF
+ 'Mistral-Nemo-Instruct-2407-Q5_K_M.gguf': "mistral", # https://huggingface.co/bartowski/Mistral-Nemo-Instruct-2407-GGUF
+ 'Mistral-Small-Instruct-2409-Q5_K_M.gguf': "mistral", # https://huggingface.co/bartowski/Mistral-Small-Instruct-2409-GGUF
+ 'qwen2.5-32b-instruct-q5_k_m.gguf': "qwen", # https://huggingface.co/Qwen/Qwen2.5-32B-Instruct-GGUF
+ 'OpenBioLLM-Llama3-70B.Q4_K_M.gguf': "mistral"} #https://huggingface.co/mradermacher/OpenBioLLM-Llama3-70B-GGUF
 
 """
 PROMPT_HELPER
@@ -63,6 +74,9 @@ def construct_prompt(system_prompt_, user_prompt_, prompt_format_):
     elif prompt_format_ == "gemma":
         formatted_prompt_ = "<start_of_turn>user\n{" + system_prompt_ + "\n"+user_prompt_+"}\n<end_of_turn><start_of_turn>model<end_of_turn><start_of_turn>model"
 
+    elif prompt_format_ == "qwen":
+        formatted_prompt_ = "<|im_start|>system\n"+system_prompt_+"<|im_end|>\n<|im_start|>user\n"+user_prompt_+"}<|im_end|>\n<|im_start|>assistant\n"
+
     else:
         print("---------------------------------------\n")
         print("!UNKNOWN PROMPT FORMAT!\n")
@@ -75,53 +89,32 @@ def construct_prompt(system_prompt_, user_prompt_, prompt_format_):
 MAIN
 """
 
-ordner = "/home/benedikt/eurorad_cases/"
-
-case_files = glob(ordner + "/**/*_description.json",recursive=True)
-case_files.sort()
-
 res_df = pd.DataFrame()
+case_list = [
+            {"CaseDescription": "The patient is a 20 year old female with a cystic, contrast-enhancing mass in the left cerebellar hemisphere. The solid nodule with this cystic mass has strongly elevated perfusion signal.", "CorrectDiagnosis": "Medulloblastoma"}
+            ] #Replace this with your own data; "case" should be a dict with a "CaseDescription" and "CorrectDiagnosis"
+for case in case_list:
+    for llm_model in models.keys():
+        llm = Llama(model_path=model_folder+llm_model, n_gpu_layers=-1, n_ctx=n_ctx, verbose=verbose)
+        prompt = construct_prompt(base_prompt,case["CaseDescription"],prompt_format_=models[llm_model])
+        response = llm.create_completion(prompt,max_tokens=max_tokens,temperature=temperature)
 
-for case_file in case_files:
-    with open(case_file) as user_file:
-        file_contents = user_file.read()
-        cur_case = json.loads(file_contents)
-    #We want to filter cases with short imaging descriptions, and those that have the diagnosis in the vignette     
-    if len(cur_case["Imaging Findings"]) > 500:
+        res_dict = {"Model": llm_model,
+                    "Temperature": temperature,
+                    "Prompt": prompt,
+                    "CaseDescription": case["CaseDescription"],
+                    "Reply": response["choices"][0]["text"],
+                    "True_Diagnosis": case["CorrectDiagnosis"]}
 
-        #This judge (LLama3-70B) decides if the diagnosis is mentioned in the case description, and returns either "mentioned" or "not mentioned"
-        judge_prompt = "You are a senior radiologist. Below, you will find a case description for a patient. This patient was diagnosed with " + cur_case["Diagnosis"] + ". We want to use this case description for an exam. Please check if the diagnosis or part of it is mentioned, discussed or suggested in the case description. Please reply by saying either 'mentioned' (if the diagnosis is mentioned, discussed or suggested) or 'not mentioned', and nothing else."
-        user_prompt = "Case Description:\n" + cur_case["Clinical Description"] + "\n" + cur_case["Imaging Findings"]
-        llm = Llama(model_path="/mnt/8tb_slot8/benedikt/Meta-Llama-3-70B-Instruct-Q4_K_M.gguf", n_gpu_layers=-1, n_ctx=0, verbose=verbose)
-        prompt_to_judge = "<|start_header_id|>system<|end_header_id|>\n{"+judge_prompt+"}<|eot_id|><|start_header_id|>user<|end_header_id|>\n{"+user_prompt+"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
-        response = llm.create_completion(prompt_to_judge,max_tokens=1024,temperature=0.0)
-        print(response["choices"][0]["text"])
+        del(llm) #Free up memory
+
+        #This judge evaluates, if the correct diagnosis is given by the model
+        prompt_to_judge = "Correct Diagnosis:\n" + res_dict["True_Diagnosis"] + "\n" + "Radiology Assistant:\n" + res_dict["Reply"]
+        prompt = construct_prompt(correctness_prompt,prompt_to_judge,prompt_format_=judge_llm["PromptStyle"])
+        llm = Llama(model_path=model_folder+judge_llm["Model"], n_gpu_layers=-1, n_ctx=n_ctx, verbose=verbose)
+        response = llm.create_completion(prompt,max_tokens=max_tokens,temperature=temperature)
+        res_dict["Judge"] = response["choices"][0]["text"]
         del(llm)
 
-        if "not" in response["choices"][0]["text"]: #Cases w/o mentioning the diagnosis
-            for repetition in [1]:
-                prompt_to_summarize = user_prompt + "\n"
-                for llm_model in models.keys():
-                    llm = Llama(model_path="/mnt/8tb_slot8/benedikt/"+llm_model, n_gpu_layers=-1, n_ctx=0, verbose=verbose)
-                    prompt = construct_prompt(base_prompt,user_prompt,prompt_format_=models[llm_model])
-                    response = llm.create_completion(prompt,max_tokens=max_tokens,temperature=temperature)
-
-                    res_dict = {"CaseID": os.path.basename(case_file)[:-22],
-                                    "Repetition": repetition,
-                                    "Model": llm_model,
-                                    "Prompt": prompt,
-                                    "Reply": response["choices"][0]["text"],
-                                    "True_Diagnosis": cur_case["Diagnosis"]}
-
-                    del(llm) #Free up memory
-
-                    #This judge evaluates, if the correct diagnosis is given by the model
-                    prompt_to_judge = "Correct Diagnosis:\n" + res_dict["True_Diagnosis"] + "\n" + "Radiology Assistant:\n" + res_dict["Reply"]
-                    llm = Llama(model_path="/mnt/8tb_slot8/benedikt/Meta-Llama-3-70B-Instruct-Q4_K_M.gguf", n_gpu_layers=-1, n_ctx=0, verbose=verbose)
-                    prompt_to_judge = "<|start_header_id|>system<|end_header_id|>\n{"+correctness_prompt+"}<|eot_id|><|start_header_id|>user<|end_header_id|>\n{"+prompt_to_judge+"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
-                    response = llm.create_completion(prompt_to_judge,max_tokens=1024,temperature=0.0)
-                    res_dict["Judge"] = response["choices"][0]["text"]
-                    del(llm)
-
-                    res_df = pd.concat([res_df,pd.DataFrame(res_dict,index=[0])],ignore_index=True)
-                    res_df.to_csv(ordner+"os-llm-benchmark-eurorad.csv",index=False)
+        res_df = pd.concat([res_df,pd.DataFrame(res_dict,index=[0])],ignore_index=True)
+        res_df.to_csv(output_file,index=False)
