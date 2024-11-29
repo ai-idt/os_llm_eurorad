@@ -91,7 +91,7 @@ MAIN
 
 res_df = pd.DataFrame()
 case_list = [
-            {"CaseDescription": "The patient is a 20 year old female with a cystic, contrast-enhancing mass in the left cerebellar hemisphere. The solid nodule with this cystic mass has strongly elevated perfusion signal.", "CorrectDiagnosis": "Medulloblastoma"}
+            {"CaseDescription": "The patient is a 20 year old female with a cystic, contrast-enhancing mass in the left cerebellar hemisphere. The solid nodule with this cystic mass has strongly elevated perfusion signal.", "CorrectDiagnosis": "Hemangioblastoma"}
             ] #Replace this with your own data; "case" should be a dict with a "CaseDescription" and "CorrectDiagnosis"
 for case in case_list:
     for llm_model in models.keys():
