@@ -40,4 +40,17 @@ Vicuna-13b-v1.5.Q5_K_M.gguf | 13B | Llama-2 | https://huggingface.co/TheBloke/vi
 As a rule of thumb, the model file size (.gguf) should be 1-2 GB smaller than your VRAM. Also, we currently fully offload models to the GPU's VRAM ("n_gpu_layers=-1" in the Llama() constructor call). If you change this to only partly offload to the GPU's memory, you can also load larger models / at higher quantization. However, this comes at a (relevant) speed penalty. 
 
 *How to add models?*  
-To add a new model, the easiest option is to (a) add it to the "MODEL_ZOO" section as a new dict entry (see examples there), and also identify or construct a new prompt format template in the "construct_prompt()" function. Note that llama_cpp_python also supports the "chat_format" argument as part of the Llama() constructor. However, we found that some older / custom models do not work well with this and rather require to explicitly program the prompt template (as our function does). 
+To add a new model, the easiest option is to (a) add it to the "MODEL_ZOO" section as a new dict entry (see examples there), and also identify or construct a new prompt format template in the "construct_prompt()" function. Note that llama_cpp_python also supports the "chat_format" argument as part of the Llama() constructor. However, we found that some older / custom models do not work well with this and rather require to explicitly program the prompt template (as our function does).
+
+## Citation
+```
+@article {Kim2024.09.04.24313026,
+	author = {Kim, Su Hwan and Schramm, Severin and Adams, Lisa C. and Braren, Rickmer and Bressem, Keno K. and Keicher, Matthias and Zimmer, Claus and Hedderich, Dennis M. and Wiestler, Benedikt},
+	title = {Performance of Open-Source LLMs in Challenging Radiological Cases - A Benchmark Study on 1,933 Eurorad Case Reports},
+	year = {2024},
+	doi = {10.1101/2024.09.04.24313026},
+	publisher = {Cold Spring Harbor Laboratory Press},
+	URL = {https://www.medrxiv.org/content/early/2024/10/03/2024.09.04.24313026},
+	journal = {medRxiv}
+}
+```
