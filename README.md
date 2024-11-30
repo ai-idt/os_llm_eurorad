@@ -44,7 +44,7 @@ To add a new model, the easiest option is to (a) add it to the "MODEL_ZOO" secti
 
 ## Citation
 ```
-@article {Kim2024.09.04.24313026,
+@article{Kim2024.09.04.24313026,
 	author = {Kim, Su Hwan and Schramm, Severin and Adams, Lisa C. and Braren, Rickmer and Bressem, Keno K. and Keicher, Matthias and Zimmer, Claus and Hedderich, Dennis M. and Wiestler, Benedikt},
 	title = {Performance of Open-Source LLMs in Challenging Radiological Cases - A Benchmark Study on 1,933 Eurorad Case Reports},
 	year = {2024},
