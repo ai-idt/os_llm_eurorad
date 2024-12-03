@@ -6,7 +6,7 @@ Recent advancements in large language models (LLMs) have created new ways to sup
 
 Llama-3-70B evaluated LLM responses, with its accuracy validated against radiologist ratings in a case subset. Models were further tested on 60 non-public brain MRI cases from a tertiary hospital to assess generalizability. Llama-3-70B demonstrated superior performance, followed by Gemma-2-27B and Mixtral-8x-7B. Similar performance results were found in the non-public dataset, where Llama-3-70B, Gemma-2-27B, and Mixtral-8x-7B again emerged as the top models. Our findings highlight the potential of open-source LLMs as decision support tools for radiological differential diagnosis in challenging, real-world cases. 
 
-![Percentage correct across all cases.](results_overview.png)
+![Percentage correct across all cases](results_overview.png)
 
 ## Files contained in this repo
 
