@@ -1,16 +1,16 @@
 # Performance of Open-Source LLMs in Challenging Radiological Cases – A Benchmark Study on 1,933 Eurorad Case Reports
 
-Recent advancements in large language models (LLMs) have created new ways to support radiological diagnostics. While both open-source and proprietary LLMs can address privacy concerns through local or cloud deployment, open-source models provide advantages in continuity of access, and potentially lower costs. In this study, we evaluated the diagnostic performance of eleven state-of-the-art open-source LLMs using clinical and imaging descriptions from 1,933 case reports in the Eurorad library. LLMs provided differential diagnoses based on clinical history and imaging findings. Responses were considered correct if the true diagnosis was included in the top three LLM suggestions.
+Recent advancements in large language models (LLMs) have created new ways to support radiological diagnostics. While both open-source and proprietary LLMs can address privacy concerns through local or cloud deployment, open-source models provide advantages in continuity of access and potentially lower costs. This study evaluated the diagnostic performance of fifteen open-source LLMs and one closed-source LLM (GPT-4o) using case descriptions from 1,933 case reports in the Eurorad library. LLMs provided differential diagnoses based on clinical history and imaging findings. Responses were considered correct if the true diagnosis appeared in the top three suggestions.
 
-![Overview of the study workflow](figure_workflow.png)
+![Overview of the study workflow](figure_workflow.jpg)
 
-Llama-3-70B evaluated LLM responses, with its accuracy validated against radiologist ratings in a case subset. Models were further tested on 60 non-public brain MRI cases from a tertiary hospital to assess generalizability. Llama-3-70B demonstrated superior performance, followed by Gemma-2-27B and Mixtral-8x-7B. Similar performance results were found in the non-public dataset, where Llama-3-70B, Gemma-2-27B, and Mixtral-8x-7B again emerged as the top models. Our findings highlight the potential of open-source LLMs as decision support tools for radiological differential diagnosis in challenging, real-world cases. 
+ Models were further tested on 60 non-public brain MRI cases from a tertiary hospital to assess generalizability. In both datasets, GPT-4o demonstrated superior performance, closely followed by Llama-3-70B. Our findings highlight the potential of open-source LLMs as decision support tools for radiological differential diagnosis in challenging, real-world cases.  
 
-![Percentage correct across all cases](results_overview.jpg)
+![Percentage correct across all cases](figure_overview.jpg)
 
 In addition, we observe a strong correlation between model size (measured as number of parameters) and performance.
 
-![Correlation between model size and performance](results_correlation.jpg)
+![Correlation between model size and performance](figure_corr.jpg)
 
 ## Files contained in this repo
 
