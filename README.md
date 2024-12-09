@@ -4,7 +4,7 @@ Recent advancements in large language models (LLMs) have created new ways to sup
 
 ![Overview of the study workflow](figure_workflow.jpg)
 
- Models were further tested on 60 non-public brain MRI cases from a tertiary hospital to assess generalizability. In both datasets, GPT-4o demonstrated superior performance, closely followed by Llama-3-70B. Our findings highlight the potential of open-source LLMs as decision support tools for radiological differential diagnosis in challenging, real-world cases.  
+ Models were further tested on 60 non-public brain MRI cases from a tertiary hospital to assess generalizability. In both datasets, GPT-4o demonstrated superior performance, closely followed by Llama-3-70B, revealing how open-source LLMs rapidly close the gap to proprietary models. Our findings highlight the potential of open-source LLMs as decision support tools for radiological differential diagnosis in challenging, real-world cases.  
 
 ![Percentage correct across all cases](figure_overview.jpg)
 
