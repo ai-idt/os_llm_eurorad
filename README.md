@@ -16,7 +16,7 @@ In addition, we observe a strong correlation between model size (measured as the
 
 To allow for the full reproducibility of our study, we publish detailed model links (below), EuroRad case IDs, and scripts to (i) generate LLM responses and (ii) have them evaluated by Llama-3-70B.
 - eurorad_cases.csv: Full List of Case IDs selected to be included in our study. To review an individual case by its CaseID, go to https://eurorad.org/case/CaseID
-- os_llm_benchmark.py: Script that performs the entire evaluation pipeline. In order to use this script, you need [llama_cpp_python](https://llama-cpp-python.readthedocs.io/en/latest/) installed in your python environment (we used v. 0.2.89). This script uses all models outlined below (so they need to be stored on your system) and has one example case, but it can be easily extended to more models and cases. Please see the comments in the script and FAQ below for some more information.
+- os_llm_benchmark.py: Script that performs the entire evaluation pipeline. To use this script, you need [llama_cpp_python](https://llama-cpp-python.readthedocs.io/en/latest/) installed in your python environment (we used v. 0.2.89). This script uses all models outlined below (so they need to be stored on your system) and has one example case, but it can be easily extended to more models and cases. Please see the comments in the script and FAQ below for more information.
 
 ## LLMs used in our study
 
@@ -44,7 +44,7 @@ Vicuna-13b-v1.5.Q5_K_M.gguf | 13B | Llama-2 | https://huggingface.co/TheBloke/vi
 As a rule of thumb, the model file size (.gguf) should be 1-2 GB smaller than your VRAM. Also, we currently fully offload models to the GPU's VRAM ("n_gpu_layers=-1" in the Llama() constructor call). If you change this to only partly offload to the GPU's memory, you can also load larger models / at higher quantization. However, this comes at a (relevant) speed penalty. 
 
 *How to add models?*  
-To add a new model, the easiest option is to (a) add it to the "MODEL_ZOO" section as a new dict entry (see examples there), and also identify or construct a new prompt format template in the "construct_prompt()" function. Note that llama_cpp_python also supports the "chat_format" argument as part of the Llama() constructor. However, we found that some older / custom models do not work well with this and rather require to explicitly program the prompt template (as our function does).
+To add a new model, the easiest option is to (a) add it to the "MODEL_ZOO" section as a new dict entry (see examples there), and also identify or construct a new prompt format template in the "construct_prompt()" function. Note that llama_cpp_python also supports the "chat_format" argument as part of the Llama() constructor. However, we found that some older / custom models do not work well with this and rather require explicitly programming the prompt template (as our function does).
 
 ## Citation
 ```
