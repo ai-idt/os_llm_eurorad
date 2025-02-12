@@ -1,4 +1,4 @@
-# Performance of Open-Source LLMs in Challenging Radiological Cases – A Benchmark Study on 1,933 Eurorad Case Reports
+# Benchmarking the diagnostic performance of open source LLMs in 1933 Eurorad case reports
 
 Recent advancements in large language models (LLMs) have created new ways to support radiological diagnostics. While both open-source and proprietary LLMs can address privacy concerns through local or cloud deployment, open-source models provide advantages in continuity of access and potentially lower costs. This study evaluated the diagnostic performance of fifteen open-source LLMs and one closed-source LLM (GPT-4o) using case descriptions from 1,933 case reports in the Eurorad library. LLMs provided differential diagnoses based on clinical history and imaging findings. Responses were considered correct if the true diagnosis appeared in the top three suggestions. Models were further tested on 60 non-public brain MRI cases from a tertiary hospital to assess generalizability.
 
@@ -48,13 +48,12 @@ To add a new model, the easiest option is to (a) add it to the "MODEL_ZOO" secti
 
 ## Citation
 ```
-@article{Kim2024.09.04.24313026,
-	author = {Kim, Su Hwan and Schramm, Severin and Adams, Lisa C. and Braren, Rickmer and Bressem, Keno K. and Keicher, Matthias and Zimmer, Claus and Hedderich, Dennis M. and Wiestler, Benedikt},
-	title = {Performance of Open-Source LLMs in Challenging Radiological Cases - A Benchmark Study on 1,933 Eurorad Case Reports},
-	year = {2024},
-	doi = {10.1101/2024.09.04.24313026},
-	publisher = {Cold Spring Harbor Laboratory Press},
-	URL = {https://www.medrxiv.org/content/early/2024/10/03/2024.09.04.24313026},
-	journal = {medRxiv}
+@article{os_llm_eurorad,
+	author = {Kim, Su Hwan and Schramm, Severin and Adams, Lisa C. and Braren, Rickmer and Bressem, Keno K. and Keicher, Matthias and Plaetzek, Paul-Sören and Paprottka, Karolin J and Zimmer, Claus and Hedderich, Dennis M. and Wiestler, Benedikt},
+	title = {Benchmarking the diagnostic performance of open source LLMs in 1933 Eurorad case reports},
+	year = {2025},
+	doi = {10.1038/s41746-025-01488-3},
+	URL = {https://www.nature.com/articles/s41746-025-01488-3},
+	journal = {npj Digital Medicine}
 }
 ```
